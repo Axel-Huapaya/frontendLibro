@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LibroService {
-
-  private API_URL = 'http://localhost:8080/api/libros'; 
+  private apiUrl = 'http://localhost:8080/api/libros'; 
 
   constructor(private http: HttpClient) { }
 
-  getLibros(): Observable<any[]> {
-    return this.http.get<any[]>(this.API_URL);
+  getLibros(): Observable<any[]> { return this.http.get<any[]>(this.apiUrl); }
+  saveLibro(libro: any): Observable<any> { return this.http.post<any>(this.apiUrl, libro); }
+  
+  updateLibro(id: number, libro: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, libro);
   }
 
-  saveLibro(libro: any): Observable<any> {
-    return this.http.post<any>(this.API_URL, libro);
-  }
+  deleteLibro(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/${id}`);
+}
 }

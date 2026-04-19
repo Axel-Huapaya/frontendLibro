@@ -8,24 +8,13 @@ import { LibroService } from './services/libro.service';
   standalone: false
 })
 export class AppComponent implements OnInit { 
-
-  libro = {
-    titulo: '',
-    autor: '',
-    precio: 0,
-    imagen: ''
-  };
-
+  libro: any = { titulo: '', autor: '', precio: 0, imagen: '' };
   libros: any[] = [];
   indexEditando: number = -1;
 
-  // Inyectamos el servicio en el constructor
   constructor(private libroService: LibroService) {}
 
-  // Al iniciar, traemos los libros de la base de datos
-  ngOnInit() {
-    this.cargarLibros();
-  }
+  ngOnInit() { this.cargarLibros(); }
 
   cargarLibros() {
     this.libroService.getLibros().subscribe({
@@ -37,43 +26,48 @@ export class AppComponent implements OnInit {
   agregarLibro() {
     if (this.indexEditando > -1) {
      
-      this.libros[this.indexEditando] = { ...this.libro };
-      this.indexEditando = -1;
-      this.resetFormulario();
-    } else {
-      // ENVIAR AL BACKEND (POST)
-      this.libroService.saveLibro(this.libro).subscribe({
-        next: (libroGuardado) => {
-          console.log('Guardado en DB:', libroGuardado);
-          this.libros.push(libroGuardado); 
+      const id = this.libros[this.indexEditando].id;
+      this.libroService.updateLibro(id, this.libro).subscribe({
+        next: () => {
+          this.cargarLibros(); 
           this.resetFormulario();
-          alert('¡Libro guardado en la Base de Datos!');
-        },
-        error: (err) => console.error('Error al guardar', err)
+          alert('¡Libro actualizado!');
+        }
+      });
+    } else {
+      
+      this.libroService.saveLibro(this.libro).subscribe({
+        next: () => {
+          this.cargarLibros();
+          this.resetFormulario();
+          alert('¡Libro guardado!');
+        }
       });
     }
   }
 
   seleccionarLibro(index: number) {
+    
     this.libro = { ...this.libros[index] };
     this.indexEditando = index;
   }
 
+  
   eliminarLibro(index: number) {
-    
-    this.libros.splice(index, 1);
-    if (this.indexEditando === index) {
-      this.resetFormulario();
-    }
-  }
+  const id = this.libros[index].id; 
+  
+  this.libroService.deleteLibro(id).subscribe({
+    next: () => {
+      this.cargarLibros(); 
+      alert('Eliminado de la base de datos');
+    },
+    error: (err: any) => console.error(err)
+  });
+}
+
 
   resetFormulario() {
-    this.libro = {
-      titulo: '',
-      autor: '',
-      precio: 0,
-      imagen: ''
-    };
+    this.libro = { titulo: '', autor: '', precio: 0, imagen: '' };
     this.indexEditando = -1;
   }
 }

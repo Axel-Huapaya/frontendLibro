@@ -1,59 +1,55 @@
-# RegistroLibros
+### 2. README.md para el Repositorio de FRONTEND (Angular)
+---
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Este archivo se enfoca en la interfaz de usuario, el proceso de compilación (build) y el servidor Nginx.
 
-## Development server
+# 💻 Frontend: Sistema de Registro de Libros
+---
 
-To start a local development server, run:
+Interfaz de usuario moderna desarrollada en **Angular** para la gestión de libros. Está diseñada para consumir una API REST distribuida en una arquitectura de microservicios en AWS.
 
-```bash
-ng serve
+## 🛠️ Stack Tecnológico
+---
+
+* **Framework:** Angular 17+
+* **Lenguaje:** TypeScript
+* **Estilos:** Bootstrap 5
+* **Servidor Web:** Nginx
+
+## 🚀 Proceso de Despliegue en Producción (AWS EC2)
+---
+
+### 1. Vinculación con el Backend
+---
+
+Antes de compilar, es necesario apuntar el servicio de Angular a la instancia correcta en `src/app/services/libro.service.ts`:
+```typescript
+private apiUrl = '[http://3.236.58.91:8080/api/libros](http://3.236.58.91:8080/api/libros)';
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 2. Generación del Build
+---
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+Ejecutar el comando de compilación optimizada:
 ```bash
-ng generate component component-name
+ng build --configuration production
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 3. Configuración del Servidor Web (Nginx)
+---
 
+Los archivos generados en `dist/registro-libros/browser/` deben moverse al directorio raíz de Nginx en la instancia de AWS:
 ```bash
-ng generate --help
+sudo rm -rf /var/www/html/*
+sudo cp -r ./dist/registro-libros/browser/* /var/www/html/
+sudo systemctl restart nginx
 ```
 
-## Building
+## 🔍 Resolución de Problemas (Troubleshooting)
+---
 
-To build the project run:
-
-```bash
-ng build
+* **Conexión Fallida:** Si no se muestran datos, verificar que el Security Group del Backend permita el puerto 8080.
+* **Página en blanco:** Revisar que los permisos de la carpeta `/var/www/html/` sean `755`.
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
